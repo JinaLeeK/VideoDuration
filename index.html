@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+  <meta charset=utf-8>
+  <title>calculte video time</title>
+  <style>
+  body {
+    font-size: 12px;
+    font-family: Arials;
+  }
+  </style>
+</head>
+<body>
+<input type="button" value="Open page" id="openWin">
+<input type="button" value="Video time" id="calculate">
+<p id="eachTime"></p>
+<p><span id="contents"></span><p>
+<p id="totalTime"></p>
+<p><span id="error"><span></p>
+
+<script>
+var targetUrl = 'http://www.cnn.com/video';
+var targetClass = '.zn-otherCollections .zn__containers .media .media__icon';
+
+$('#openWin').on('click',function(){
+      window.open(targetUrl);
+})
+
+$('#calculate').on('click',function(){
+  $('#contents').load('grabber.php?url='+targetUrl+' '+targetClass, function(response, status, xhr){
+    if ( status == "error"){
+      var msg = "Sorry but there was an error: ";
+      $( "#error").html(msg+ xhr.status+" "+xhr.statusText);
+    }
+
+    $('#contents').append('Each Video'+'</br>');
+    var items = $(targetClass.split(' ').pop());
+    for (var i=0; i<items.length; i++){
+      $('#contents').append($(items[i]).attr('data-post-text')+'</br>');
+    }
+
+    var durations = 0;
+    for (var i=0; i<items.length; i++){
+      var time = $(items[i]).attr('data-post-text');
+      time = time.split(':');
+      durations += parseInt(time[0])*60+parseInt([time[1]]);
+    }
+    var min = Math.floor(durations/60);
+    var sec = (durations%60);
+    $('#totalTime').append('Total Time: '+min+'min '+sec+'sec');
+    $('#totalTime').css('color','red');
+  })
+})
+
+</script>
+</html>
